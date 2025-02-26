@@ -22,6 +22,7 @@ function Home() {
   const [filter, setFilter] = useState("all");
   const [followups, setFollowups] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [check, setCheck] = useState(false)
 
   const logininfom = useSelector((state) => state.userlogin?.LoginInfo[0]);
 
@@ -38,13 +39,12 @@ function Home() {
           const response = await fetchcustomers(execuId);
           const customers = response.data;
           console.log(response.data);
-          
 
           setData(customers);
-
           setTotalCustomers(customers.length);
+
           setInterested(customers.filter((c) => c.status === "interested").length);
-          setOngoingCustomers(customers.filter((c) => c.status === "Ongoing").length);
+          setOngoingCustomers(customers.filter((c) => c.status === "ongoing").length);
           setJoinedCustomers(customers.filter((c) => c.status === "joined_course").length);
           setNotJoiningCustomers(customers.filter((c) => c.status === "dont_want_to_join").length);
 
@@ -64,28 +64,29 @@ function Home() {
                 minute: "2-digit",
                 second: "2-digit",
               }),
+
               followupassigndate: customer.followupassigndate
                 ? new Date(customer.followupassigndate).toLocaleDateString("en-GB", {
-                    weekday: "short",
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })
+                  weekday: "short",
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })
                 : "Not Assigned",
             }));
 
           setFollowups(followupData);
+
         } catch (error) {
           console.error("Error fetching customer data:", error);
         }
       }
-
       apicallAllCustomers();
     }
-  }, [execuId]);
+  }, [execuId, followups]);
 
   useEffect(() => {
     const filtered = data.filter((customer) => {
@@ -93,7 +94,7 @@ function Home() {
       const matchesFilter =
         filter === "all" ||
         (filter === "interested" && customer.status === "interested") ||
-        (filter === "ongoing" && customer.status === "Ongoing") ||
+        (filter === "ongoing" && customer.status === "ongoing") ||
         (filter === "joined" && customer.status === "joined_course") ||
         (filter === "not_joining" && customer.status === "dont_want_to_join") ||
         (filter === "recentlyAdded" &&
@@ -105,26 +106,26 @@ function Home() {
               new Date(update.date) >=
               new Date().setDate(new Date().getDate() - 7)
           ));
-  
+
 
       const matchesSearch =
         customer.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (customer.phone && customer.phone.toString().includes(searchTerm));
-  
+
       return matchesFilter && matchesSearch;
     });
- 
+
     let sortedData = [...filtered];
+
+
     if (filter === "recentlyDailyUpdate") {
       sortedData.sort((a, b) => {
-        const latestUpdateA = a.dailyUpdate
-          ?.filter(
-            (update) =>
-              new Date(update.date) >=
-              new Date().setDate(new Date().getDate() - 7)
-          )
-          .sort((x, y) => new Date(y.date) - new Date(x.date))[0]?.date;
-  
+        const latestUpdateA = a.dailyUpdate?.filter(
+          (update) =>
+            new Date(update.date) >=
+            new Date().setDate(new Date().getDate() - 7)
+        ).sort((x, y) => new Date(y.date) - new Date(x.date))[0]?.date;
+
         const latestUpdateB = b.dailyUpdate
           ?.filter(
             (update) =>
@@ -132,14 +133,14 @@ function Home() {
               new Date().setDate(new Date().getDate() - 7)
           )
           .sort((x, y) => new Date(y.date) - new Date(x.date))[0]?.date;
-  
+
         return new Date(latestUpdateB) - new Date(latestUpdateA);
       });
     }
-  
+
+
     setFilteredData(sortedData);
   }, [data, filter, searchTerm]);
-  
 
   const handleRecentlyAdded = () => {
     setFilter("recentlyAdded");
@@ -147,7 +148,11 @@ function Home() {
 
   const handleRecentlyDailyUpdate = () => {
     setFilter("recentlyDailyUpdate");
+    setCheck(true)
   };
+
+  console.log("datas>>>>>>>>>>>.", filteredData);
+
 
   return (
     <div>
@@ -156,29 +161,30 @@ function Home() {
 
       <div className="home_container">
         <div className="main_content">
+        
           <div className="topSectionMain_div_userHomepage">
             <div className="topsection_inner_div_userHompage">
-              <div className="topsection_card_userhomepage" onClick={() => setFilter("all")}>
+              <div className="topsection_card_userhomepage" onClick={() => { setFilter("all"), setCheck(false) }}>
                 <MdPlaylistAddCheckCircle />
                 <h3>Total Customers</h3>
                 <p>{totalCustomers}</p>
               </div>
-              <div className="topsection_card_userhomepage" onClick={() => setFilter("interested")}>
+              <div className="topsection_card_userhomepage" onClick={() => { setFilter("interested"), setCheck(false) }}>
                 <AiFillLike />
                 <h3>Interested Customers</h3>
                 <p>{interested}</p>
               </div>
-              <div className="topsection_card_userhomepage" onClick={() => setFilter("ongoing")}>
+              <div className="topsection_card_userhomepage" onClick={() => { setFilter("ongoing"), setCheck(false) }}>
                 <MdOutlineMoving />
                 <h3>Ongoing Customers</h3>
                 <p>{ongoingCustomers}</p>
               </div>
-              <div className="topsection_card_userhomepage" onClick={() => setFilter("joined")}>
+              <div className="topsection_card_userhomepage" onClick={() => { setFilter("joined"), setCheck(false) }}>
                 <MdCloudDone />
                 <h3>Joined Customers</h3>
                 <p>{joinedCustomers}</p>
               </div>
-              <div className="topsection_card_userhomepage" onClick={() => setFilter("not_joining")}>
+              <div className="topsection_card_userhomepage" onClick={() => { setFilter("not_joining"), setCheck(false) }}>
                 <AiFillDislike />
                 <h3>Not Joining</h3>
                 <p>{notJoiningCustomers}</p>
@@ -197,7 +203,7 @@ function Home() {
               />
               <button
                 className="customer_actions_button_userhomepage"
-                style={{ marginBottom: "10px" }}
+                style={{ marginBottom: "10px", marginRight: '10px' }}
                 onClick={handleRecentlyAdded}
               >
                 Recently Added
@@ -224,26 +230,36 @@ function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredData.map((customer, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{customer.fullname}</td>
-                      <td>{customer.email}</td>
-                      <td>{customer.phone}</td>
-                      <td>{customer.course}</td>
-                      <td>{customer.method}</td>
-                      <td>{customer.status}</td>
-                      <td>{new Date(customer.date).toLocaleDateString("en-GB")}</td>
-                      <td>
-                        <Link to={`/DailyCustomerUpdate/${customer._id}`}>
-                          <button className="customer_actions_button_userhomepage">
-                            Daily Update
-                          </button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredData.map((customer, index) => {
+                    const latestUpdateDate = customer.dailyUpdate
+                      ?.sort((a, b) => new Date(b.date) - new Date(a.date))[0]?.date;
+
+                    return (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{customer.fullname}</td>
+                        <td>{customer.email}</td>
+                        <td>{customer.phone}</td>
+                        <td>{customer.course}</td>
+                        <td>{customer.method}</td>
+                        <td>{customer.status}</td>
+                        <td>
+                          {check === true
+                            ? new Date(latestUpdateDate).toLocaleDateString("en-GB")  // Display latest update if 'check' is true
+                            : new Date(customer.date).toLocaleDateString("en-GB")}
+                        </td>
+                        <td>
+                          <Link to={`/DailyCustomerUpdate/${customer._id}`}>
+                            <button className="customer_actions_button_userhomepage">
+                              Daily Update
+                            </button>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
+
               </table>
             </div>
           </div>

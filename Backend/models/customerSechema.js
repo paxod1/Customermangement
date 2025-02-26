@@ -11,12 +11,12 @@ const CustomerSchema = new mongoose.Schema({
   execuname: { type: String, required: true },
 dailyUpdate: [
     {
-      update: { type: String, required: true }, 
+      update: { type: String, required: true },  
       date: { type: Date, required: true },    
       contact: { type: String, default: "N/A" }, 
     },
   ],
-  status: { type: String, default: 'Ongoing' },
+  status: { type: String, default: 'ongoing' },
   method: { type: String, default: 'not decided' },
   reason: { type: String, required: false },
   followupcontent: { type: String },

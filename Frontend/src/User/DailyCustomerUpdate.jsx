@@ -285,10 +285,10 @@ function DailyCustomerUpdate() {
 
                     <div className="daily_updates_list">
                       <h3>All Daily Updates:</h3>
-                      <div className="daily_updates_box">
+                      <div className="daily_updates_box" style={{ whiteSpace: 'pre-wrap' }}>
                         {allDailyUpdates.length > 0 ? (
                           allDailyUpdates.slice().reverse().map((update, index) => (
-                            <div key={index} className="daily_update_item">
+                            <div key={index} className="daily_update_item" style={{ whiteSpace: 'pre-wrap' }}>
 
                               <div className="daily_update_icon_timestamp">
                                 <div className="daily_update_icon">
